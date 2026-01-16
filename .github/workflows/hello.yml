@@ -1,4 +1,4 @@
-name: Hello WeaGo Action
+name: Run Heatmap Fetch Script
 
 on:
   push:
@@ -6,9 +6,18 @@ on:
       - main
 
 jobs:
-  hello:
+  run-script:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Say hello
-        run: echo "👋 Hello from GitHub Actions – WeaGo is alive!"
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run heatmap fetch
+        run: node fetch_heatmap_weather.js
 
