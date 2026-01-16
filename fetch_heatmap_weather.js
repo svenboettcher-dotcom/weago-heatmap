@@ -36,7 +36,7 @@ function chunk(arr, size) {
 // ---------------------------------------------
 // LOAD CELLS
 // ---------------------------------------------
-const TEST_LIMIT = 0; // 0 = aus, z.B. 50 = Testmodus
+const TEST_LIMIT = 10; // 0 = aus, z.B. 50 = Testmodus
 
 const cellsAll = JSON.parse(fs.readFileSync(INPUT_FILE, "utf8"));
 const cells =
