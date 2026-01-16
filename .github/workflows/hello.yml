@@ -1,11 +1,9 @@
-name: Run Heatmap Fetch Script 2
+name: Run Heatmap Fetch & Upload
 
 on:
   schedule:
-    # täglich um 03:30 UTC (~04:30 DE Winterzeit)
     - cron: "30 3 * * *"
   workflow_dispatch: {}
-
 
 jobs:
   run-script:
@@ -23,3 +21,19 @@ jobs:
       - name: Run heatmap fetch
         run: node fetch_heatmap_weather.js
 
+      # 🔐 Authentifizierung mit Google Cloud
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      # ☁️ gcloud / gsutil verfügbar machen
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # 🚀 Upload nach Firebase Storage (GCS)
+      - name: Upload heatmap to Firebase Storage
+        run: |
+          gsutil -h "Cache-Control:no-cache, max-age=0" cp \
+            heatmap_weather_daily_v1.json \
+            gs://${{ secrets.FIREBASE_STORAGE_BUCKET }}/heatmaps/europe/heatmap_weather_daily_v1.json
