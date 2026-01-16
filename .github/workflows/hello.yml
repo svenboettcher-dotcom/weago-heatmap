@@ -1,9 +1,11 @@
 name: Run Heatmap Fetch Script
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    # täglich um 03:30 UTC (~04:30 DE Winterzeit)
+    - cron: "30 3 * * *"
+  workflow_dispatch: {}
+
 
 jobs:
   run-script:
