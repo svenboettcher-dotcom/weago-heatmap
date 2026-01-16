@@ -1,4 +1,4 @@
-name: Run Heatmap Fetch Script
+name: Run Heatmap Fetch Script 2
 
 on:
   schedule:
