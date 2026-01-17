@@ -9,7 +9,7 @@ const OUTPUT_FILE = "./heatmap_weather_daily_v1.json";
 const BATCH_SIZE = 50;
 const SLEEP_MS = 15_000;
 const RATE_LIMIT_SLEEP_MS = 60_000;
-const DAYS = 3;
+const DAYS = 3; // Anzahl Heatmap-Tage (ab morgen)
 
 const DAILY_FIELDS = [
   "temperature_2m_min",
@@ -33,10 +33,30 @@ function chunk(arr, size) {
   return out;
 }
 
+function toISODate(d) {
+  return d.toISOString().split("T")[0];
+}
+
+// ---------------------------------------------
+// DATE RANGE (ab morgen, exakt DAYS Tage)
+// ---------------------------------------------
+const today = new Date();
+
+const startDate = new Date(today);
+startDate.setDate(startDate.getDate() + 1); // morgen
+
+const endDate = new Date(today);
+endDate.setDate(endDate.getDate() + DAYS); // morgen + (DAYS - 1)
+
+const START_DATE = toISODate(startDate);
+const END_DATE = toISODate(endDate);
+
+console.log(`📅 Heatmap range: ${START_DATE} → ${END_DATE}`);
+
 // ---------------------------------------------
 // LOAD CELLS
 // ---------------------------------------------
-const TEST_LIMIT = 0; // 0 = aus, z.B. 50 = Testmodus
+const TEST_LIMIT = 0; // 0 = aus
 
 const cellsAll = JSON.parse(fs.readFileSync(INPUT_FILE, "utf8"));
 const cells =
@@ -49,9 +69,6 @@ console.log(
 
 const batches = chunk(cells, BATCH_SIZE);
 
-
-
-
 // ---------------------------------------------
 // LOAD / INIT STORE (resume-fähig)
 // ---------------------------------------------
@@ -59,6 +76,8 @@ let store = {
   v: 1,
   generated_at: new Date().toISOString(),
   days: DAYS,
+  start_date: START_DATE,
+  end_date: END_DATE,
   cells: {}
 };
 
@@ -94,7 +113,8 @@ for (let b = 0; b < batches.length; b++) {
     latitude: lat,
     longitude: lon,
     daily: DAILY_FIELDS,
-    forecast_days: String(DAYS),
+    start_date: START_DATE,
+    end_date: END_DATE,
     timezone: "auto"
   });
 
@@ -136,17 +156,17 @@ for (let b = 0; b < batches.length; b++) {
     const d = r.daily;
     const days = [];
 
-for (let day = 0; day < DAYS; day++) {
-  days.push([
-    Math.round(d.temperature_2m_min?.[day] ?? 0),
-    Math.round(d.temperature_2m_max?.[day] ?? 0),
-    Math.round(d.precipitation_sum?.[day] ?? 0),
-    Math.round((d.sunshine_duration?.[day] ?? 0) / 3600),
-    Math.round(d.windspeed_10m_max?.[day] ?? 0),
-    Math.round(d.windgusts_10m_max?.[day] ?? 0)
-  ]);
-}
-
+    // day 0 = morgen
+    for (let day = 0; day < DAYS; day++) {
+      days.push([
+        Math.round(d.temperature_2m_min?.[day] ?? 0),
+        Math.round(d.temperature_2m_max?.[day] ?? 0),
+        Math.round(d.precipitation_sum?.[day] ?? 0),
+        Math.round((d.sunshine_duration?.[day] ?? 0) / 3600),
+        Math.round(d.windspeed_10m_max?.[day] ?? 0),
+        Math.round(d.windgusts_10m_max?.[day] ?? 0)
+      ]);
+    }
 
     store.cells[cell.id] = {
       c: cell.id,
