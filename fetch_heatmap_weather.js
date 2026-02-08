@@ -4,7 +4,7 @@ import fs from "fs";
 // CONFIG
 // ---------------------------------------------
 const INPUT_FILE = "./heatmap_cells.json";
-const OUTPUT_FILE = "./heatmap_weather_daily_v2.json";
+const OUTPUT_FILE = "./heatmap_weather_daily_v1.json";
 
 const BATCH_SIZE = 50;
 const SLEEP_MS = 15_000;
