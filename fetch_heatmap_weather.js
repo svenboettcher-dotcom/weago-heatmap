@@ -17,7 +17,9 @@ const DAILY_FIELDS_MAIN = [
   "temperature_2m_max",
   "precipitation_sum",
   "sunshine_duration",
-  "windspeed_10m_max"
+  "windspeed_10m_max",
+  "weathercode",
+  "cloudcover_mean"
 ].join(",");
 
 // gem_seamless (nur Böen)
@@ -38,6 +40,17 @@ function chunk(arr, size) {
 
 function toISODate(d) {
   return d.toISOString().split("T")[0];
+}
+
+// 🌤 Sonnen-Dämpfung nach Weathercode (daily)
+function weatherSunFactor(code) {
+  if (code == null) return 1;
+
+  if (code === 45 || code === 48) return 0.4;      // Nebel
+  if (code >= 61 && code <= 82) return 0.3;        // Regen / Schauer / Schnee
+  if (code >= 95) return 0.2;                      // Gewitter
+
+  return 1;
 }
 
 // ---------------------------------------------
@@ -194,11 +207,28 @@ for (let b = 0; b < batches.length; b++) {
     const days = [];
 
     for (let day = 0; day < DAYS; day++) {
+      const sunRawHours =
+        (d.sunshine_duration?.[day] ?? 0) / 3600;
+
+      const cloudFactor =
+        d.cloudcover_mean?.[day] != null
+          ? Math.max(0, 1 - d.cloudcover_mean[day] / 100)
+          : 1;
+
+      const weatherFactor =
+        weatherSunFactor(d.weathercode?.[day]);
+
+      const sunEffective =
+        sunRawHours * cloudFactor * weatherFactor;
+
       days.push([
         Math.round(d.temperature_2m_min?.[day] ?? 0),
         Math.round(d.temperature_2m_max?.[day] ?? 0),
         Math.round(d.precipitation_sum?.[day] ?? 0),
-        Math.round((d.sunshine_duration?.[day] ?? 0) / 3600),
+
+        // ☀️ HEATMAP-Sonne (ungerundet!)
+        Number(sunEffective.toFixed(2)),
+
         Math.round(d.windspeed_10m_max?.[day] ?? 0),
         Math.round(g.windgusts_10m_max?.[day] ?? 0) // 💨 gem_seamless
       ]);
