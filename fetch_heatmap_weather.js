@@ -4,21 +4,24 @@ import fs from "fs";
 // CONFIG
 // ---------------------------------------------
 const INPUT_FILE = "./heatmap_cells.json";
-const OUTPUT_FILE = "./heatmap_weather_daily_v1.json";
+const OUTPUT_FILE = "./heatmap_weather_daily_v2.json";
 
 const BATCH_SIZE = 50;
 const SLEEP_MS = 15_000;
 const RATE_LIMIT_SLEEP_MS = 60_000;
 const DAYS = 3; // Anzahl Heatmap-Tage (ab morgen)
 
-const DAILY_FIELDS = [
+// best_match (alles außer Böen)
+const DAILY_FIELDS_MAIN = [
   "temperature_2m_min",
   "temperature_2m_max",
   "precipitation_sum",
   "sunshine_duration",
-  "windspeed_10m_max",
-  "windgusts_10m_max"
+  "windspeed_10m_max"
 ].join(",");
+
+// gem_seamless (nur Böen)
+const DAILY_FIELDS_GUSTS = "windgusts_10m_max";
 
 // ---------------------------------------------
 // HELPERS
@@ -43,10 +46,10 @@ function toISODate(d) {
 const today = new Date();
 
 const startDate = new Date(today);
-startDate.setDate(startDate.getDate() + 1); // morgen
+startDate.setDate(startDate.getDate() + 1);
 
 const endDate = new Date(today);
-endDate.setDate(endDate.getDate() + DAYS); // morgen + (DAYS - 1)
+endDate.setDate(endDate.getDate() + DAYS);
 
 const START_DATE = toISODate(startDate);
 const END_DATE = toISODate(endDate);
@@ -56,7 +59,7 @@ console.log(`📅 Heatmap range: ${START_DATE} → ${END_DATE}`);
 // ---------------------------------------------
 // LOAD CELLS
 // ---------------------------------------------
-const TEST_LIMIT = 0; // 0 = aus
+const TEST_LIMIT = 0;
 
 const cellsAll = JSON.parse(fs.readFileSync(INPUT_FILE, "utf8"));
 const cells =
@@ -73,11 +76,15 @@ const batches = chunk(cells, BATCH_SIZE);
 // LOAD / INIT STORE (resume-fähig)
 // ---------------------------------------------
 let store = {
-  v: 1,
+  v: 2,
   generated_at: new Date().toISOString(),
   days: DAYS,
   start_date: START_DATE,
   end_date: END_DATE,
+  models: {
+    default: "best_match",
+    gusts: "gem_seamless"
+  },
   cells: {}
 };
 
@@ -109,21 +116,49 @@ for (let b = 0; b < batches.length; b++) {
   const lat = batch.map(c => c.lat.toFixed(4)).join(",");
   const lon = batch.map(c => c.lon.toFixed(4)).join(",");
 
-  const params = new URLSearchParams({
+  // -----------------------------
+  // REQUEST A – best_match
+  // -----------------------------
+  const paramsMain = new URLSearchParams({
     latitude: lat,
     longitude: lon,
-    daily: DAILY_FIELDS,
+    daily: DAILY_FIELDS_MAIN,
     start_date: START_DATE,
     end_date: END_DATE,
     timezone: "auto"
   });
 
-  const url = "https://api.open-meteo.com/v1/forecast?" + params.toString();
+  const urlMain =
+    "https://api.open-meteo.com/v1/forecast?" +
+    paramsMain.toString();
 
-  let data;
+  // -----------------------------
+  // REQUEST B – gem_seamless (gusts)
+  // -----------------------------
+  const paramsGusts = new URLSearchParams({
+    latitude: lat,
+    longitude: lon,
+    daily: DAILY_FIELDS_GUSTS,
+    start_date: START_DATE,
+    end_date: END_DATE,
+    timezone: "auto",
+    models: "gem_seamless"
+  });
+
+  const urlGusts =
+    "https://api.open-meteo.com/v1/forecast?" +
+    paramsGusts.toString();
+
+  let dataMain, dataGusts;
+
   try {
-    const res = await fetch(url);
-    data = await res.json();
+    const [resMain, resGusts] = await Promise.all([
+      fetch(urlMain),
+      fetch(urlGusts)
+    ]);
+
+    dataMain = await resMain.json();
+    dataGusts = await resGusts.json();
   } catch {
     console.warn("⚠️ Network error – retry after pause");
     await sleep(RATE_LIMIT_SLEEP_MS);
@@ -131,32 +166,33 @@ for (let b = 0; b < batches.length; b++) {
     continue;
   }
 
-  if (data?.error) {
-    console.warn("⛔ Open-Meteo:", data.reason || data);
-    console.log(`⏸️ Rate-limit pause ${RATE_LIMIT_SLEEP_MS / 1000}s`);
+  if (dataMain?.error || dataGusts?.error) {
+    console.warn("⛔ Open-Meteo error");
     await sleep(RATE_LIMIT_SLEEP_MS);
     b--;
     continue;
   }
 
-  const responses = Array.isArray(data) ? data : [data];
+  const responsesMain = Array.isArray(dataMain) ? dataMain : [dataMain];
+  const responsesGusts = Array.isArray(dataGusts) ? dataGusts : [dataGusts];
 
   // ---------------------------------------------
   // PROCESS CELLS
   // ---------------------------------------------
   for (let i = 0; i < batch.length; i++) {
     const cell = batch[i];
-    const r = responses[i];
+    const rMain = responsesMain[i];
+    const rGusts = responsesGusts[i];
 
-    if (!r?.daily) {
+    if (!rMain?.daily || !rGusts?.daily) {
       console.warn("⚠️ Missing daily for cell", cell.id);
       continue;
     }
 
-    const d = r.daily;
+    const d = rMain.daily;
+    const g = rGusts.daily;
     const days = [];
 
-    // day 0 = morgen
     for (let day = 0; day < DAYS; day++) {
       days.push([
         Math.round(d.temperature_2m_min?.[day] ?? 0),
@@ -164,7 +200,7 @@ for (let b = 0; b < batches.length; b++) {
         Math.round(d.precipitation_sum?.[day] ?? 0),
         Math.round((d.sunshine_duration?.[day] ?? 0) / 3600),
         Math.round(d.windspeed_10m_max?.[day] ?? 0),
-        Math.round(d.windgusts_10m_max?.[day] ?? 0)
+        Math.round(g.windgusts_10m_max?.[day] ?? 0) // 💨 gem_seamless
       ]);
     }
 
@@ -176,9 +212,6 @@ for (let b = 0; b < batches.length; b++) {
     };
   }
 
-  // ---------------------------------------------
-  // WRITE AFTER EACH BATCH
-  // ---------------------------------------------
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(store));
   console.log(`💾 Saved ${Object.keys(store.cells).length} cells`);
 
