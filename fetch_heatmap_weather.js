@@ -12,7 +12,7 @@ const BATCH_MIN = 30;
 const BATCH_MAX = 120;
 let batchSize = BATCH_MAX;
 
-const SLEEP_MS = 3_000;
+const SLEEP_MS = 10_000;
 const RATE_LIMIT_SLEEP_MS = 60_000;
 
 // best_match (ohne Böen)
