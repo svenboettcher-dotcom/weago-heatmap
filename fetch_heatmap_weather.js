@@ -15,7 +15,7 @@ let batchSize = BATCH_MAX;
 const SLEEP_MS = 3_000;
 const RATE_LIMIT_SLEEP_MS = 60_000;
 
-// best_match (alles außer Böen)
+// best_match (ohne Böen)
 const DAILY_FIELDS_MAIN = [
   "temperature_2m_min",
   "temperature_2m_max",
@@ -25,9 +25,6 @@ const DAILY_FIELDS_MAIN = [
   "weathercode",
   "cloudcover_mean"
 ].join(",");
-
-// gem_seamless (nur Böen)
-const DAILY_FIELDS_GUSTS = "windgusts_10m_max";
 
 // ---------------------------------------------
 // HELPERS
@@ -66,9 +63,7 @@ console.log(`📅 Heatmap range: ${START_DATE} → ${END_DATE}`);
 // ---------------------------------------------
 // LOAD CELLS
 // ---------------------------------------------
-const cellsAll = JSON.parse(fs.readFileSync(INPUT_FILE, "utf8"));
-const cells = cellsAll;
-
+const cells = JSON.parse(fs.readFileSync(INPUT_FILE, "utf8"));
 console.log(`Loaded ${cells.length} cells`);
 
 // ---------------------------------------------
@@ -81,8 +76,7 @@ let store = {
   start_date: START_DATE,
   end_date: END_DATE,
   models: {
-    default: "best_match",
-    gusts: "gem_seamless"
+    default: "best_match"
   },
   cells: {}
 };
@@ -130,35 +124,17 @@ while (cursor < cells.length) {
     timezone: "auto"
   });
 
-  const paramsGusts = new URLSearchParams({
-    latitude: lat,
-    longitude: lon,
-    daily: DAILY_FIELDS_GUSTS,
-    start_date: START_DATE,
-    end_date: END_DATE,
-    timezone: "auto",
-    models: "gem_seamless"
-  });
-
   const urlMain =
     "https://api.open-meteo.com/v1/forecast?" + paramsMain.toString();
-  const urlGusts =
-    "https://api.open-meteo.com/v1/forecast?" + paramsGusts.toString();
 
-  let dataMain, dataGusts;
+  let dataMain;
 
   try {
-    const [resMain, resGusts] = await Promise.all([
-      fetch(urlMain),
-      fetch(urlGusts)
-    ]);
-
+    const resMain = await fetch(urlMain);
     dataMain = await resMain.json();
-    dataGusts = await resGusts.json();
   } catch {
     console.warn("⚠️ Network error");
 
-    consecutiveFailures++;
     if (batchSize > BATCH_MIN) {
       batchSize = Math.max(BATCH_MIN, Math.floor(batchSize / 2));
       console.warn(`🧯 Reducing batch size → ${batchSize}`);
@@ -168,10 +144,9 @@ while (cursor < cells.length) {
     continue;
   }
 
-  if (dataMain?.error || dataGusts?.error) {
+  if (dataMain?.error) {
     console.warn("⛔ Open-Meteo error");
 
-    consecutiveFailures++;
     if (batchSize > BATCH_MIN) {
       batchSize = Math.max(BATCH_MIN, Math.floor(batchSize / 2));
       console.warn(`🧯 Reducing batch size → ${batchSize}`);
@@ -181,18 +156,15 @@ while (cursor < cells.length) {
     continue;
   }
 
-  const responsesMain = Array.isArray(dataMain) ? dataMain : [dataMain];
-  const responsesGusts = Array.isArray(dataGusts) ? dataGusts : [dataGusts];
+  const responses = Array.isArray(dataMain) ? dataMain : [dataMain];
 
   for (let i = 0; i < batch.length; i++) {
     const cell = batch[i];
-    const rMain = responsesMain[i];
-    const rGusts = responsesGusts[i];
+    const r = responses[i];
 
-    if (!rMain?.daily || !rGusts?.daily) continue;
+    if (!r?.daily) continue;
 
-    const d = rMain.daily;
-    const g = rGusts.daily;
+    const d = r.daily;
     const days = [];
 
     for (let day = 0; day < DAYS; day++) {
@@ -215,7 +187,7 @@ while (cursor < cells.length) {
         Math.round(d.precipitation_sum?.[day] ?? 0),
         Math.round(sunEffective),
         Math.round(d.windspeed_10m_max?.[day] ?? 0),
-        Math.round(g.windgusts_10m_max?.[day] ?? 0)
+        null // 👈 Böen explizit NICHT vorhanden
       ]);
     }
 
