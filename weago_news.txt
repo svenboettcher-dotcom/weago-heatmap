@@ -1,9 +1,12 @@
 2026-02-11
 WeaGo entwickelt sich weiter.
+Was wurde geändert:
 
 • Score-Berechnung überarbeitet
 • Parameter können optional ignoriert werden
 • Einstellungen optisch überarbeitet
-• Heatmapdaten werden 2xTag aktualisiert
+• Tagesansicht überarbeitet
+• Heatmapdaten werden 2x/Tag aktualisiert
 • Performance-Optimierungen
-• Fehlerbehebung
+• Allgemeine Fehlerbehebung 
+• ...
