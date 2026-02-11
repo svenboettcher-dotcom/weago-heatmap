@@ -1,4 +1,14 @@
 2026-02-11
+System-Update
+
+• Score-Berechnung präzisiert
+• Einstellungen überarbeitet
+• Parameter können optional ignoriert werden
+• Stabilere Heatmap
+• Performance-Optimierungen
+
+WeaGo entwickelt sich weiter.
+2026-02-11
 
 Whats new...
 
