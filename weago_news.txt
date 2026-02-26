@@ -1,12 +1,171 @@
-2026-02-11
-WeaGo entwickelt sich weiter.
-Was wurde geändert:
+2026-02-26
 
-• Score-Berechnung überarbeitet
-• Parameter können optional ignoriert werden
-• Einstellungen optisch überarbeitet
-• Tagesansicht überarbeitet
-• Heatmapdaten werden 2x/Tag aktualisiert
-• Performance-Optimierungen
-• Allgemeine Fehlerbehebung 
-• ...
+WeaGo Update
+(EN, ES, DK, IT, FR, NL … ↓)
+
+---
+
+## 🇩🇪 Deutsch
+
+WeaGo läuft seit dem **23.02.** auf einer **neuen technischen App-Basis**.
+
+Wenn ihr WeaGo **vor diesem Datum als App über weago.de installiert** hattet, nutzt ihr noch die alte Version.
+Diese wird **nicht mehr aktualisiert**.
+
+**Was ist zu tun?**
+
+* Alte WeaGo-App **löschen**
+* WeaGo neu über **https://app.weago.de** öffnen
+* **Als App installieren**
+
+  * **iPhone / iPad:** Teilen-Symbol → „Zum Home-Bildschirm“
+  * **Android:** Browser-Menü → „App installieren“
+
+Damit seid ihr wieder auf der **aktuellen Version** und erhaltet alle zukünftigen Updates automatisch.
+
+Die Umstellung war notwendig, da WeaGo auf eine **neue, stabilere App-Basis** gewechselt ist.
+Ältere Installationen können diese Updates technisch nicht mehr empfangen.
+
+---
+
+## 🇬🇧 English
+
+**WeaGo Update**
+
+As of **February 23rd**, WeaGo runs on a **new technical app foundation**.
+
+If you installed WeaGo as an app **before this date (via weago.de)**, you are still using the old version, which **no longer receives updates**.
+
+**What to do:**
+
+* Delete the old WeaGo app
+* Open WeaGo via **https://app.weago.de**
+* **Install it as an app**
+
+  * **iPhone / iPad:** Share icon → “Add to Home Screen”
+  * **Android:** Browser menu → “Install app”
+
+This ensures you are using the **latest version** and will receive all future updates automatically.
+
+The change was necessary because WeaGo moved to a **new, more stable app foundation**.
+Older installations can no longer receive updates for technical reasons.
+
+---
+
+## 🇪🇸 Español
+
+**Actualización de WeaGo**
+
+Desde el **23 de febrero**, WeaGo funciona sobre una **nueva base técnica de la app**.
+
+Si instalaste WeaGo como aplicación **antes de esa fecha (a través de weago.de)**, sigues usando la versión antigua, que **ya no recibe actualizaciones**.
+
+**Qué hacer:**
+
+* Eliminar la antigua app de WeaGo
+* Abrir WeaGo desde **https://app.weago.de**
+* **Instalarla como aplicación**
+
+  * **iPhone / iPad:** Icono de compartir → “Añadir a pantalla de inicio”
+  * **Android:** Menú del navegador → “Instalar aplicación”
+
+Así tendrás la **versión más reciente** y recibirás todas las futuras actualizaciones automáticamente.
+
+El cambio fue necesario porque WeaGo pasó a una **base de aplicación más estable**.
+Las instalaciones antiguas ya no pueden recibir actualizaciones por motivos técnicos.
+
+---
+
+## 🇩🇰 Dansk
+
+**WeaGo Opdatering**
+
+Siden **23. februar** kører WeaGo på en **ny teknisk app-platform**.
+
+Hvis du installerede WeaGo som app **før denne dato (via weago.de)**, bruger du stadig den gamle version, som **ikke længere modtager opdateringer**.
+
+**Hvad skal du gøre:**
+
+* Slet den gamle WeaGo-app
+* Åbn WeaGo via **https://app.weago.de**
+* **Installer den som app**
+
+  * **iPhone / iPad:** Del-ikon → “Føj til hjemmeskærm”
+  * **Android:** Browsermenu → “Installer app”
+
+Så er du på den **nyeste version** og modtager alle fremtidige opdateringer automatisk.
+
+Ændringen var nødvendig, fordi WeaGo er skiftet til en **nyere og mere stabil app-platform**.
+Gamle installationer kan ikke længere modtage opdateringer af tekniske årsager.
+
+---
+
+## 🇮🇹 Italiano
+
+**Aggiornamento WeaGo**
+
+Dal **23 febbraio**, WeaGo utilizza una **nuova base tecnica dell’app**.
+
+Se hai installato WeaGo come app **prima di questa data (tramite weago.de)**, stai ancora utilizzando la versione precedente, che **non riceve più aggiornamenti**.
+
+**Cosa fare:**
+
+* Eliminare la vecchia app WeaGo
+* Aprire WeaGo tramite **https://app.weago.de**
+* **Installarla come app**
+
+  * **iPhone / iPad:** Icona di condivisione → “Aggiungi alla schermata Home”
+  * **Android:** Menu del browser → “Installa app”
+
+In questo modo utilizzerai la **versione più recente** e riceverai automaticamente tutti i futuri aggiornamenti.
+
+Il cambiamento è stato necessario perché WeaGo è passato a una **base dell’app più stabile**.
+Le vecchie installazioni non possono più ricevere aggiornamenti per motivi tecnici.
+
+---
+
+## 🇫🇷 Français
+
+**Mise à jour WeaGo**
+
+Depuis le **23 février**, WeaGo fonctionne sur une **nouvelle base technique de l’application**.
+
+Si vous avez installé WeaGo comme application **avant cette date (via weago.de)**, vous utilisez encore l’ancienne version, qui **ne reçoit plus de mises à jour**.
+
+**Que faire :**
+
+* Supprimer l’ancienne application WeaGo
+* Ouvrir WeaGo via **https://app.weago.de**
+* **L’installer comme application**
+
+  * **iPhone / iPad :** Icône de partage → « Ajouter à l’écran d’accueil »
+  * **Android :** Menu du navigateur → « Installer l’application »
+
+Vous utiliserez ainsi la **dernière version** et recevrez automatiquement toutes les futures mises à jour.
+
+Ce changement était nécessaire car WeaGo est passé à une **base applicative plus stable**.
+Les anciennes installations ne peuvent plus recevoir de mises à jour pour des raisons techniques.
+
+---
+
+## 🇳🇱 Nederlands
+
+**WeaGo Update**
+
+Sinds **23 februari** draait WeaGo op een **nieuwe technische app-basis**.
+
+Als je WeaGo **vóór deze datum als app via weago.de hebt geïnstalleerd**, gebruik je nog de oude versie, die **geen updates meer ontvangt**.
+
+**Wat moet je doen:**
+
+* Oude WeaGo-app verwijderen
+* WeaGo openen via **https://app.weago.de**
+* **Installeren als app**
+
+  * **iPhone / iPad:** Deel-icoon → “Zet op beginscherm”
+  * **Android:** Browsermenu → “App installeren”
+
+Zo gebruik je weer de **nieuwste versie** en ontvang je automatisch alle toekomstige updates.
+
+De overstap was nodig omdat WeaGo is verhuisd naar een **nieuwe, stabielere app-basis**.
+Oude installaties kunnen technisch geen updates meer ontvangen.
