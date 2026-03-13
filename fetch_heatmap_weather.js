@@ -6,7 +6,7 @@ import fs from "fs";
 const INPUT_FILE = "./heatmap_cells.json";
 const OUTPUT_FILE = "./heatmap_weather_daily_v1.json";
 
-const DAYS = 3; // Anzahl Heatmap-Tage (ab morgen)
+const DAYS = 8; // Anzahl Heatmap-Tage (ab morgen)
 
 const BATCH_MIN = 30;
 const BATCH_MAX = 120;
