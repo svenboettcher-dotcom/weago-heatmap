@@ -2,8 +2,10 @@ name: Run Heatmap Fetch & Upload
 
 on:
   schedule:
-    - cron: "50 3 * * *"
-    - cron: "50 12 * * *"
+    - cron: "17 5 * * *"
+      timezone: "Europe/Berlin"
+    - cron: "23 14 * * *"
+      timezone: "Europe/Berlin"
   workflow_dispatch: {}
 
 jobs:
